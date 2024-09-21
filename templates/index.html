@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <link rel="stylesheet" href="/pinball/css/reset.css" type="text/css">
+        <link rel="stylesheet" href="/pinball/css/main.css" type="text/css">
+        <link rel="stylesheet" href="/pinball/css/orientation_utils.css" type="text/css">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, minimal-ui" />
+	<meta name="msapplication-tap-highlight" content="no"/>
+        <script type="text/javascript" src="/pinball/js/jquery-3.2.1.min.js"></script>
+
+        <script type="text/javascript" src="/pinball/js/createjs.min.js"></script>
+        <script type="text/javascript" src="/pinball/js/howler.min.js"></script>
+        <script type="text/javascript" src="/pinball/js/screenfull-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/ctl_utils-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/Box2D.min-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/sprite_lib-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/settings-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CLang-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CPreloader-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CMain-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CTextButton-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CToggle-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CGfxButton-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CMenu-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CGame-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CInterface-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CHelpPanel-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CCreditsPanel-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CAreYouSurePanel-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CEndPanel-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CPhysicsController-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CObjectBuilder-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CTable-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/levelsettings-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CButtonSystem-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CToggleSystem-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CHoleSystem-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CGateSystem-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CScoreController-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CLightIndicator-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CModuleMultiplier-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CModuleBumper-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CModuleHole-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CModuleRouter-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CModuleLetters-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CModuleJumper-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CModuleJackpot-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CModuleShield-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CModuleStart-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CGUIExpandible-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CPausePanel-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CLocalStorage-dist.js"></script>
+        <script type="text/javascript" src="/pinball/js/CMsgBox-dist.js"></script>
+        	<script type="text/javascript" src="/pinball/js/api-dist.js"></script>
+    <!-- <script type="text/javascript" src="/js/iframeKeyboardFix.min.js"></script> --->
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            /* background: linear-gradient(135deg, #667eea, #764ba2); */
+            background: linear-gradient(135deg, #000000, #ffffff);
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            box-sizing: border-box;
+            position: absolute;
+            top: 0;
+            left: 0;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 2; /* Ensure content is above canvas */
+        }
+
+
+        
+
+        #backgroundCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; 
+        }
+    </style>
+        </head>
+    <body ondragstart="return false;" ondrop="return false;" >
+	<div style="position: fixed; background-color: transparent; top: 0px; left: 0px; width: 100%; height: 100%"></div>
+    <canvas id="backgroundCanvas" ></canvas>
+          <script>
+            $(document).ready(function(){
+                     var oMain = new CMain({
+                                            
+                                            fullscreen:true, //SET THIS TO FALSE IF YOU DON'T WANT TO SHOW FULLSCREEN BUTTON
+                                            check_orientation:true,     //SET TO FALSE IF YOU DON'T WANT TO SHOW ORIENTATION ALERT ON MOBILE DEVICES   
+                                            
+                                           });
+                                           
+                                           
+                    $(oMain).on("start_session", function(evt) {
+                            if(getParamValue('ctl-arcade') === "true"){
+                                parent.__ctlArcadeStartSession();
+                            }
+                            //...ADD YOUR CODE HERE EVENTUALLY
+                    });
+                     
+                    $(oMain).on("end_session", function(evt) {
+                           if(getParamValue('ctl-arcade') === "true"){
+                               parent.__ctlArcadeEndSession();
+                           }
+                           //...ADD YOUR CODE HERE EVENTUALLY
+                    });
+
+                    $(oMain).on("restart_level", function(evt, iLevel) {
+                           if(getParamValue('ctl-arcade') === "true"){
+                               parent.__ctlArcadeRestartLevel({level:iLevel});
+                           }
+                           //...ADD YOUR CODE HERE EVENTUALLY
+                    });
+
+                    $(oMain).on("save_score", function(evt,iScore, szMode) {
+                           if(getParamValue('ctl-arcade') === "true"){
+                               parent.__ctlArcadeSaveScore({score:iScore, mode: szMode});
+                           }
+                           //...ADD YOUR CODE HERE EVENTUALLY
+                    });
+
+                    $(oMain).on("start_level", function(evt, iLevel) {
+                           if(getParamValue('ctl-arcade') === "true"){
+                               parent.__ctlArcadeStartLevel({level:iLevel});
+                           }
+                           //...ADD YOUR CODE HERE EVENTUALLY
+                    });
+
+                    $(oMain).on("end_level", function(evt,iLevel) {
+                           if(getParamValue('ctl-arcade') === "true"){
+                               parent.__ctlArcadeEndLevel({level:iLevel});
+                           }
+                           //...ADD YOUR CODE HERE EVENTUALLY
+                    });
+
+                    $(oMain).on("show_interlevel_ad", function(evt) {
+                           if(getParamValue('ctl-arcade') === "true"){
+                               parent.__ctlArcadeShowInterlevelAD();
+                           }
+                           //...ADD YOUR CODE HERE EVENTUALLY
+                    });
+                    
+                    $(oMain).on("share_event", function(evt, iScore) {
+                           if(getParamValue('ctl-arcade') === "true"){
+                               parent.__ctlArcadeShareEvent({   img: TEXT_SHARE_IMAGE,
+                                                                title: TEXT_SHARE_TITLE,
+                                                                msg: TEXT_SHARE_MSG1 + iScore + TEXT_SHARE_MSG2,
+                                                                msg_share: TEXT_SHARE_SHARE1 + iScore + TEXT_SHARE_SHARE1});
+                           }
+                           //...ADD YOUR CODE HERE EVENTUALLY
+                    });
+					 
+                    if(isIOS()){ 
+                        setTimeout(function(){sizeHandler();},200); 
+                    }else{ sizeHandler(); } 
+                                         
+           });
+
+        </script>
+        <script>
+        let previousOrientation = window.innerHeight > window.innerWidth;
+            let isOrentation = false; // Set this to true to check for orientation
+
+            function checkOrientation() {
+                try {
+                    const content = document.getElementById('content');
+                    const orientationPrompt = document.getElementById('orientationOverlay');
+                    const isPortrait = window.innerHeight > window.innerWidth;
+
+                    if (isOrentation) {
+                        if (isPortrait) {
+                            content.style.display = 'none';
+                            orientationPrompt.style.display = 'flex';
+                        } else {
+                            content.style.display = 'flex';
+                            orientationPrompt.style.display = 'none';
+                                // Redirect to the game URL only if orientation has changed to landscape
+                                // window.location.href = 'https://www.zumaballs.com/flash/zuma-deluxe-2/index.htm';
+                        }
+                    }else{
+                        if (isPortrait !== previousOrientation) {
+                            // Orientation has changed, reload the page
+                            previousOrientation = isPortrait;
+                            window.location.reload();
+                        }
+                    }
+
+                } catch (error) {
+                    console.error("Error in checkOrientation function:", error);
+                }
+            }
+            
+            window.addEventListener('resize', checkOrientation);
+            window.addEventListener('load', checkOrientation);
+
+    
+            checkOrientation();
+
+            // Background animation
+            const canvas = document.getElementById('backgroundCanvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+
+            function resizeCanvas() {
+                try {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                } catch (error) {
+                    console.error("Error in resizeCanvas function:", error);
+                }
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+    </script>
+    <script src="/pinball/js/particleAnimation-dist.js"></script>
+        <div class="check-fonts">
+            <p class="check-font-1">walibi0615bold</p>
+            <p class="check-font-2">Digital</p>
+        </div> 
+        
+        <canvas id="canvas" class='ani_hack' width="768" height="1280"> </canvas>
+        <div data-orientation="portrait" class="orientation-msg-container"><p class="orientation-msg-text">Please rotate your device</p></div>
+        <div id="block_game" style="position: fixed; background-color: transparent; top: 0px; left: 0px; width: 100%; height: 100%; display:none"></div>
+
+    </body>
+</html>
